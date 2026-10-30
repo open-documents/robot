@@ -1,0 +1,8 @@
+# iMark 定时上传默认忽略
+.obsidian/
+.trash/
+node_modules/
+*.imark-tmp
+.DS_Store
+Thumbs.db
+desktop.ini
