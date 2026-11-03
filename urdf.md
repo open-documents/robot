@@ -67,6 +67,7 @@ qz = (r21 - r12) / (4·qw)
 其中，URDF 的 rpy 是 extrinsic X-Y-Z：先绕世界固定的 X 轴转 roll，再绕固定的 Y 轴转 pitch，最后绕固定的 Z 轴转 yaw。写成矩阵就是右乘（因为每次左乘都会叠加在“当前”坐标系上）：
 
 
+
 R = Rz(yaw) · Ry(pitch) · Rx(roll)
 ```
           1    0       0    
