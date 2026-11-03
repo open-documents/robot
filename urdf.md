@@ -1,6 +1,5 @@
 
-URDF 提供的是运动学拓扑 + 每个关节的固定安装位姿
-
+本文介绍机器人领域的 URDF 文件。
 # 左乘、右乘
 定义符号如下：
 
@@ -11,11 +10,12 @@ URDF 提供的是运动学拓扑 + 每个关节的固定安装位姿
 | $R \cdot a$ | F 系中的某坐标轴 a（a 经过 R 变换） |
 | $Rot\_body(a, \theta)$ | 在 body 系，绕轴 a 转 θ 的矩阵 |
 | $Rot\_F(R \cdot a, \theta)$ | 在 F 系，绕轴 $R \cdot a$ 转 θ 的矩阵 |
-|  |  |
 
-已知坐标系 body 下绕轴 a 旋转 θ 的变换矩阵为 $Rot_{body}(a, θ)$，那么在坐标系 F 下绕
-Rot_F(R·a, θ) = R · Rot_body(a, θ) · R⁻¹ 
-
+已知坐标系 body 下绕轴 a 旋转 θ 的变换矩阵为 $Rot_{body}(a, θ)$，那么在坐标系 F 下绕 a 旋转 θ 的变换矩阵为：$Rot_F(R·a, θ) = R · Rot_{body}(a, θ) · R⁻¹$
+证明：对 F 系里任意向量 v，做下面操作：
+- $R⁻¹ · v$：把 $v$ 从 F 坐标系映射到 body 坐标系；
+- $Rot_{body}(a,θ) · (R⁻¹ v)$：在 body 坐标系中绕 a 转 θ；
+- $R · (...)$：将坐标映射回 F 坐标系；
 # 一、关节
 关节用于连接父子连杆。URDF 文件中通过 <joint> 标签定义关节，本章介绍关节标签的属性和子标签。
 ```xml
@@ -153,3 +153,4 @@ n_y n_x(1-\cos q)+n_z\sin q & n_y^2(1-\cos q)+\cos q & n_y n_z(1-\cos q)-n_x\sin
 n_z n_x(1-\cos q)-n_y\sin q & n_z n_y(1-\cos q)+n_x\sin q & n_z^2(1-\cos q)+\cos q
 \end{bmatrix}
 $$
+
