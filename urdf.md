@@ -52,7 +52,6 @@ $$
 T_{parent←child}(q) = T_{origin}(xyz, rpy) · T_{joint}(axis, q)
 $$
 其中：
-$$$$
 - $T_{joint}(axis, q)$：负责描述关节实际运动带来的变换。axis 定义了运动的方向（比如绕 X/Y/Z 轴转动），q 是关节变量（旋转关节是角度，移动关节是距离）。
 - $T_{origin}(xyz, rpy)$：负责描述关节安装位置的固定偏移。它通过平移 xyz 和旋转 rpy，确立了关节坐标系相对于父连杆坐标系的原点位置。
 
@@ -100,33 +99,51 @@ Rz(y) = │ sin y   cos y   0 │      绕 Z 轴转 y (yaw)
 
 
 # 附录
+
+
+## 1、固定变化
+在关节零位时，子连杆到父连杆的固定变换 $T_{origin}(xyz, rpy)$，如下：
 $$T_{origin}(xyz, rpy)=
 \begin{bmatrix}
 R(rpy) & t(xyz) \\
 0 & 1  \\
 \end{bmatrix}$$
-
-## 1、
-
+1）$R(rpy)$ 
 $$
-Rx(a) = 
+R(rpy) = R_z(yaw) \cdot R_y(pitch) \cdot R_x(roll)
+$$
+$$
+R_x(a) = 
 \begin{bmatrix}
 1 & 0      & 0 \\
 0 & cosa & -sina  \\
 0 & sina  & cosa
 \end{bmatrix}
 \quad
-Ry(b) = 
+
+R_y(b) = 
 \begin{bmatrix}
 cosb & 0   & sinb \\
 0       & 1  & 0  \\
 -sinb & 0  & cosb
 \end{bmatrix}
 \quad
-Rz(c) = 
+
+R_z(c) = 
 \begin{bmatrix}
 cosc & -sinc  & 0 \\
 sinc  & cosc  & 0  \\
 0      & 0       & 1
 \end{bmatrix}
+\\
+
 $$
+2）$$
+$t(xyz) = [x, y, z]^T$
+
+由 R 转四元数，常用公式（迹法）：
+tr = r11 + r22 + r33
+qw = 0.5·√(1 + tr)
+qx = (r32 - r23) / (4·qw)
+qy = (r13 - r31) / (4·qw)
+qz = (r21 - r12) / (4·qw)
