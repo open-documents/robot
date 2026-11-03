@@ -13,32 +13,39 @@ URDF 提供的是运动学拓扑 + 每个关节的固定安装位姿
 | $Rot\_F(R \cdot a, \theta)$ | 在 F 系，绕轴 $R \cdot a$ 转 θ 的矩阵 |
 |  |  |
 
-
 # 一、关节
 关节用于连接父子连杆。URDF 文件中通过 <joint> 标签定义关节，本章介绍关节标签的属性和子标签。
-## 1、关节类型
-关节类型决定父子连杆间相对运动的方式。URDF 文件中通过 <joint> 标签的 type 属性定义关节类型，如下所示：
+```xml
+<joint name="ur5e_left_shoulder_pan_joint" type="revolute">
+  <origin xyz="0 0 0.16249999" rpy="0 0 -3.14159257"/>
+  <parent link="ur5e_left_base_link"/>
+  <child link="ur5e_left_shoulder_link"/>
+  <axis xyz="0 0 1"/>
+  <limit effort="150.0" lower="-6.28318531" upper="6.28318531" velocity="3.14159265"/>
+  <dynamics friction="0" damping="0"/>
+</joint>
+```
+## 1、关节类型（type 属性）
+关节类型决定父子连杆间相对运动的方式，通过关节类型结合关节数据，确定子连杆到父连杆的变换关系。URDF 文件中通过 <joint> 标签的 type 属性定义关节类型，如下所示：
 ```xml
 <joint type="...">
 ```
 
 在 URDF 规范中，共 6 种关节类型：
-type	自由度	运动	常见场景	本工程
-fixed	0	完全刚性连接	传感器安装、工具法兰、底盘挂载	4 个
-revolute	1	绕单轴转动，有角度上下限	机械臂关节、舵机	12 个
-continuous	1	绕单轴转动，无角度限制（可无限转）	车轮、转台	0
-prismatic	1	沿单轴平移，有位移上下限	滑轨、升降台	0
-planar	3	平面内平移 + 绕平面法线转动	少见	0
-floating	6	任意平移 + 旋转	自由飞行物体	0
-相关子标签
-<joint name="ur5e_left_shoulder_pan_joint" type="revolute">
-  <origin xyz="0 0 0.16249999" rpy="0 0 -3.14159257"/>
-  <parent link="ur5e_left_base_link"/>
-  <child link="ur5e_left_shoulder_link"/>
-  <axis xyz="0 0 1"/>                <!-- 转动/平移轴，在关节坐标系下 -->
-  <limit effort="150.0" lower="-6.28318531" upper="6.28318531" velocity="3.14159265"/>
-  <dynamics friction="0" damping="0"/>
-</joint>
+
+| 关节类型 type | 自由度 | 运动 |
+| :---: | :---: | :---: |
+| fixed | 0 | 完全刚性连接 |
+| revolute | 1 | 绕单轴转动，有角度上下限 |
+| continuous | 1 | 绕单轴转动，无角度限制 |
+| prismatic | 1 | 沿单轴平移，有位移上下限 |
+| planar | 3 | 平面内平移 + 绕平面法线转动 |
+| floating | 6 | 任意平移 + 旋转 |
+
+## 2、父子连杆变换关系（origin、axis 标签）
+父子连杆变换关系通过 <origin>、<axis> 标签内容配合实时关节值共同确定：
+- <origin>：描述关节在零位时，子连杆相对于父连杆的固定变换。定义关节坐标系（即子连杆坐标系）在父连杆坐标系中的位姿；
+- <
 子标签	作用	哪些 type 需要
 <origin>	父 link → 关节坐标系的固定变换；也是 q=0 时子 link 的位姿	全部
 <parent>/<child>	树结构	全部
