@@ -1,3 +1,4 @@
+
 URDF 提供的是运动学拓扑 + 每个关节的固定安装位姿
 URDF <joint type="..."> 的作用
 type 决定 父子连杆之间允许哪种相对运动，以及该关节有哪些子标签（axis/limit/dynamics）。
