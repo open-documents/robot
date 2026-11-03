@@ -52,16 +52,12 @@ $$
 T_{parent←child}(q) = T_{origin}(xyz, rpy) · T_{joint}(axis, q)
 $$
 其中：
-$$T_{origin}(xyz, rpy)=
-\begin{bmatrix}
-R(rpy) & t(xyz) \\
-0 & 1  \\
-\end{bmatrix}$$
-- $T_{joint}(axis, q)$：q
-- 
+$$$$
+- $T_{joint}(axis, q)$：负责描述关节实际运动带来的变换。axis 定义了运动的方向（比如绕 X/Y/Z 轴转动），q 是关节变量（旋转关节是角度，移动关节是距离）。
+- $T_{origin}(xyz, rpy)$：负责描述关节安装位置的固定偏移。它通过平移 xyz 和旋转 rpy，确立了关节坐标系相对于父连杆坐标系的原点位置。
 
 
-       t = [x, y, z]ᵀ 是平移，表达在 parent 坐标系里
+
 R(rpy) 是旋转，URDF 规定是绕固定轴 X→Y→Z 依次转（extrinsic），等价于矩阵乘法顺序：
 R = Rz(yaw) · Ry(pitch) · Rx(roll)
 左臂安装位姿为例：
@@ -103,97 +99,34 @@ Rz(y) = │ sin y   cos y   0 │      绕 Z 轴转 y (yaw)
 
 
 
-把“右乘/左乘”这件事拆开讲
-先纠正我上一条里一句含糊的话：“左乘会叠加在当前坐标系上”说反了。准确的规则是：
+# 附录
+$$T_{origin}(xyz, rpy)=
+\begin{bmatrix}
+R(rpy) & t(xyz) \\
+0 & 1  \\
+\end{bmatrix}$$
 
-左乘 = 绕固定（世界）轴转；右乘 = 绕自身（当前）轴转。
+## 1、
 
-下面从头推一遍，你就能看出 R = Rz·Ry·Rx 是怎么来的。
-
-一、先定好约定
-用列向量，R 把“子坐标系里的坐标”映射到“父坐标系”：
-
-
-v_parent = R · v_child
-复合旋转时，最右边的矩阵最先作用（矩阵乘法结合律不改变这个顺序）：
-
-
-Rz · Ry · Rx · v   ≡   Rz · (Ry · (Rx · v))
-                             ↑    ↑    ↑
-                           最后  中间  最先
-所以 R = Rz·Ry·Rx 读成：先执行 Rx，再执行 Ry，最后执行 Rz。
-
-二、固定轴旋转为什么是“左乘”
-假设当前总旋转是 R（一开始是单位阵 I），现在要绕世界坐标系里那根固定的轴 a 转 θ 度。
-
-关键点：轴 a 是用世界坐标写死的，它不随物体转动而改变。所以无论物体此刻转到哪，这次旋转在世界坐标里都表示为同一个矩阵 Rot(a, θ)。把它作用在已经转好的姿态上，就是直接左乘：
-
-
-R_new = Rot(a, θ) · R
-于是 URDF 的 fixed-axis XYZ 顺序：
-
-
-初始:          R = I
-绕世界 X 转 roll:   R ← Rx(roll) · I        = Rx
-绕世界 Y 转 pitch:  R ← Ry(pitch) · Rx       = Ry·Rx
-绕世界 Z 转 yaw:    R ← Rz(yaw) · Ry · Rx    = Rz·Ry·Rx
-每一步都是左乘，所以后转的写在左边，最终是 Rz·Ry·Rx。
-
-这就是 URDF 里 <origin rpy="roll pitch yaw"> 的含义，也是 tf2 Quaternion.setRPY() 的定义：“roll 绕固定 X，pitch 绕固定 Y，yaw 绕固定 Z”。
-
-三、绕自身轴转为什么变成“右乘”
-假设物体当前已经有姿态 R，现在要绕物体自己的轴 a（比如它自己的 Y 轴）转 θ。
-
-这个轴在世界坐标里已经不是 a 了，而是被 R 转过的 R·a。绕世界轴 R·a 转 θ 的矩阵是：
-
-
-Rot(R·a, θ) = R · Rot(a, θ) · R⁻¹
-把它作用在当前姿态上：
-
-
-R_new = Rot(R·a, θ) · R
-      = R · Rot(a, θ) · R⁻¹ · R
-      = R · Rot(a, θ)
-R⁻¹·R 抵消，变成了右乘。所以 intrinsic X→Y→Z：
-
-
-绕自身 X:  R = Rx
-绕自身 Y:  R = Rx·Ry
-绕自身 Z:  R = Rx·Ry·Rz
-得到的是 Rx·Ry·Rz，和固定轴的 Rz·Ry·Rx 不是一回事。
-
-四、两者差多少：数字说话
-取 roll = 90°, pitch = 0, yaw = 90°，作用在同一个向量 e_z = (0,0,1) 上：
-
-顺序	计算	结果
-Rz·Ry·Rx（固定轴，URDF）	先绕世界 X 转 90°，再绕世界 Z 转 90°	(1, 0, 0)
-Rx·Ry·Rz（自身轴）	先绕自身 Z 转 90°，再绕自身 X 转 90°	(0, -1, 0)
-完全是两个方向。
-
-再用你前面那个真实 rpy (0.007602, 0.023780, 0.809016)，对 e_z 作用：
-
-顺序	结果
-Rz·Ry·Rx	(0.021912, 0.011958, 0.999688)
-Rx·Ry·Rz	(0.023778, -0.007600, 0.999688)
-因为 roll/pitch 很小，差异不大，但确实不同——顺序写反不会报错，只会悄悄算错，这是四元数/旋转矩阵 bug 的常见来源。
-
-五、一个有用的等价关系
-同一组角度下：
-
-
-extrinsic X-Y-Z  ≡  intrinsic Z-Y-X
-Rz·Ry·Rx        ≡  Rz·Ry·Rx
-也就是说，R = Rz·Ry·Rx 可以有两种读法，矩阵完全一样：
-
-固定轴读法：先绕世界 X 转 roll，再绕世界 Y 转 pitch，再绕世界 Z 转 yaw
-自身轴读法：先绕自身 Z 转 yaw，再绕新的 Y 转 pitch，最后绕最新的 X 转 roll
-这是欧拉角表示的一个经典恒等式，可以帮你检查自己的理解：如果某本书写“intrinsic XYZ = Rx·Ry·Rz”，那它对应的 extrinsic 就是 Z-Y-X，不是 X-Y-Z。
-
-六、记忆口诀
-旋转方式	矩阵写法	口诀
-绕固定轴，执行顺序 X→Y→Z	Rz·Ry·Rx	后转的写在左边
-绕自身轴，执行顺序 X→Y→Z	Rx·Ry·Rz	先转的写在左边
-URDF 的 rpy 属于第一种，所以必须是 Rz(yaw)·Ry(pitch)·Rx(roll)。
-
-一句话总结：R = Rz·Ry·Rx 不是因为“左乘叠加在当前系”，恰恰相反——因为这三根轴始终是指向世界坐标的固定轴，每次旋转都不需要变换轴，直接左乘上去，于是最后转的跑到了最左边。绕自身轴才需要把轴用当前姿态 R 变换一次，那个 R⁻¹·R 的抵消把乘法推到了右边。
-
+$$
+Rx(a) = 
+\begin{bmatrix}
+1 & 0      & 0 \\
+0 & cosa & -sina  \\
+0 & sina  & cosa
+\end{bmatrix}
+\quad
+Ry(b) = 
+\begin{bmatrix}
+cosb & 0   & sinb \\
+0       & 1  & 0  \\
+-sinb & 0  & cosb
+\end{bmatrix}
+\quad
+Rz(c) = 
+\begin{bmatrix}
+cosc & -sinc  & 0 \\
+sinc  & cosc  & 0  \\
+0      & 0       & 1
+\end{bmatrix}
+$$
