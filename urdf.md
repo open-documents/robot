@@ -51,62 +51,16 @@ URDF 提供的是运动学拓扑 + 每个关节的固定安装位姿
 $$
 T_{parent←child}(q) = T_{origin}(xyz, rpy) · T_{joint}(axis, q)
 $$
-其中：
-- $T_{joint}(axis, q)$：负责描述关节实际运动带来的变换。axis 定义了运动的方向（比如绕 X/Y/Z 轴转动），q 是关节变量（旋转关节是角度，移动关节是距离）。
-- $T_{origin}(xyz, rpy)$：负责描述关节安装位置的固定偏移。它通过平移 xyz 和旋转 rpy，确立了关节坐标系相对于父连杆坐标系的原点位置。
-
-
-
-R(rpy) 是旋转，URDF 规定是绕固定轴 X→Y→Z 依次转（extrinsic），等价于矩阵乘法顺序：
-R = Rz(yaw) · Ry(pitch) · Rx(roll)
-左臂安装位姿为例：
-xyz = (-0.128064, 0.237478, -0.746870)
-rpy = (0.007602, 0.023780, 0.809016)
-计算流程（rsp 内部是 KDL 做的，原理一致）：
-
-由 rpy 构造旋转矩阵 R = Rz(0.809016)·Ry(0.023780)·Rx(0.007602)
-由 R 转四元数，常用公式（迹法）：
-tr = r11 + r22 + r33
-qw = 0.5·√(1 + tr)
-qx = (r32 - r23) / (4·qw)
-qy = (r13 - r31) / (4·qw)
-qz = (r21 - r12) / (4·qw)
-这个 yaw≈46.36° 的位姿，四元数大约 (0.0039, 0.0116, 0.3934, 0.9193)。
-
-3. 平移直接取 xyz，不做旋转（t 本来就在 parent 系里）。
-
-注意这里的转换顺序 先旋转再平移：如果写成 T = R·T(t)（先平移后旋转），结果就错了——平移会被 R 跟着转。正确的组合是 T = T(t)·R
-1. 
-其中，URDF 的 rpy 是 extrinsic X-Y-Z：先绕世界固定的 X 轴转 roll，再绕固定的 Y 轴转 pitch，最后绕固定的 Z 轴转 yaw。写成矩阵就是右乘（因为每次左乘都会叠加在“当前”坐标系上）：
-
-其中
-
-
-R = Rz(yaw) · Ry(pitch) · Rx(roll)
-
-          1    0       0    
-Rx(r) =   0  cos r   -sin r       绕 X 轴转 r (roll)
-          0  sin r    cos r 
-
-          cos p   0   sin p 
-Ry(p) =     0     1     0         绕 Y 轴转 p (pitch)
-         -sin p   0   cos p ┘
-
-        ┌ cos y  -sin y   0 ┐
-Rz(y) = │ sin y   cos y   0 │      绕 Z 轴转 y (yaw)
-        └   0       0     1 ┘
-
-
-
+其中（具体公式定义见附录）：
+- $T_{origin}(xyz, rpy)$：负责描述关节安装位置的固定偏移。它通过平移 xyz 和旋转 rpy，确立了关节坐标系相对于父连杆坐标系的原点位置；
+- $T_{joint}(axis, q)$：负责描述关节实际运动带来的变换。axis 定义了运动的方向（比如绕 X/Y/Z 轴转动），q 是关节变量（旋转关节是角度，移动关节是距离）；
 # 附录
-
-
 ## 1、固定变化
 在关节零位时，子连杆到父连杆的固定变换 $T_{origin}(xyz, rpy)$，如下：
 $$T_{origin}(xyz, rpy)=
 \begin{bmatrix}
 R(rpy) & t(xyz) \\
-0 & 1  \\
+\mathbf{0}^T & 1  \\
 \end{bmatrix}$$
 1）$R(rpy)$ 
 $$
@@ -138,12 +92,59 @@ sinc  & cosc  & 0  \\
 \\
 
 $$
-2）$$
-$t(xyz) = [x, y, z]^T$
 
-由 R 转四元数，常用公式（迹法）：
-tr = r11 + r22 + r33
-qw = 0.5·√(1 + tr)
-qx = (r32 - r23) / (4·qw)
-qy = (r13 - r31) / (4·qw)
-qz = (r21 - r12) / (4·qw)
+记为：
+$$
+R(rpy) = 
+\begin{bmatrix}
+r_{11} & r_{12}  & r_{13}  \\
+r_{21} & r_{22}  & r_{23}  \\
+r_{31} & r_{32}  & r_{33}
+\end{bmatrix}
+$$
+2）$t(xyz) = [x, y, z]^T$
+
+## 2、关节变换
+关节变换 $T_{joint}(axis, q)$，定义如下：
+$$
+T_{joint}(axis, q) = \begin{bmatrix}
+R(axis, q) & \mathbf{0} \\
+\mathbf{0}^T & 1
+\end{bmatrix}
+$$
+1）绕标准轴 x 旋转的矩阵
+$$
+T_{joint}(X, q) = \begin{bmatrix}
+1 & 0 & 0 & 0 \\
+0 & \cos q & -\sin q & 0 \\
+0 & \sin q & \cos q & 0 \\
+0 & 0 & 0 & 1
+\end{bmatrix}
+$$
+2）绕标准轴 y 旋转的矩阵
+$$
+T_{joint}(Y, q) = \begin{bmatrix}
+\cos q & 0 & \sin q & 0 \\
+0 & 1 & 0 & 0 \\
+-\sin q & 0 & \cos q & 0 \\
+0 & 0 & 0 & 1
+\end{bmatrix}
+$$
+3）绕标准轴 z 旋转的矩阵
+$$
+T_{joint}(Z, q) = \begin{bmatrix}
+\cos q & -\sin q & 0 & 0 \\
+\sin q & \cos q & 0 & 0 \\
+0 & 0 & 1 & 0 \\
+0 & 0 & 0 & 1
+\end{bmatrix}
+$$
+
+4）任意单位向量轴的旋转矩阵（罗德里格斯公式）
+$$
+R(axis, q) = \begin{bmatrix}
+n_x^2(1-\cos q)+\cos q & n_x n_y(1-\cos q)-n_z\sin q & n_x n_z(1-\cos q)+n_y\sin q \\
+n_y n_x(1-\cos q)+n_z\sin q & n_y^2(1-\cos q)+\cos q & n_y n_z(1-\cos q)-n_x\sin q \\
+n_z n_x(1-\cos q)-n_y\sin q & n_z n_y(1-\cos q)+n_x\sin q & n_z^2(1-\cos q)+\cos q
+\end{bmatrix}
+$$
