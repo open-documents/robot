@@ -30,8 +30,6 @@ floating	6	任意平移 + 旋转	自由飞行物体	0
 
 
 <joint> 的 <origin> 语义是：在关节零位时，child 坐标系相对 parent 坐标系的位姿。用齐次矩阵写就是：
-
-
         ┌           ┐
 T_p_c = │  R(rpy)  t(xyz) │
         │    0      1     │
