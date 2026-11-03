@@ -44,21 +44,21 @@ URDF 提供的是运动学拓扑 + 每个关节的固定安装位姿
 
 ## 2、父子连杆变换关系（origin、axis 标签）
 父子连杆变换关系通过 <origin>、<axis> 标签内容配合实时关节值共同确定：
-- <origin>：定义关节坐标系（即子连杆坐标系）在父连杆坐标系中的位姿。描述关节在零位时，子连杆相对于父连杆的固定变换；
-- <axis>：定义关节的运动轴（在关节坐标系中表达）。该标签只对可动关节（revolute、continuous、prismatic）有意义，指明绕哪根轴转（旋转关节）或沿哪根轴移（平移关节）
-子标签	作用	哪些 type 需要
-<origin>	父 link → 关节坐标系的固定变换；也是 q=0 时子 link 的位姿	全部
-<parent>/<child>	树结构	全部
-<axis>	运动轴；缺省 (1,0,0)	revolute / continuous / prismatic / planar
-<limit>	lower/upper（角度或米）、effort、velocity	revolute / prismatic 必需；continuous 只需 effort/velocity
-<dynamics>	摩擦、阻尼	可选
-<mimic>	跟随另一个关节（如夹爪双指联动）	可选
-<calibration>	零点标定	可选
-type ，以及该关节有哪些子标签（axis/limit/dynamics）。
+- <origin>：定义关节在零位时，关节坐标系（即子连杆坐标系）在父连杆坐标系中的位姿。描述子连杆相对于父连杆的固定变换；
+- <axis>：定义关节坐标系中关节的运动轴。该标签只对可动关节（revolute、continuous、prismatic）有意义，指明关节绕哪根轴转或沿哪根轴移；
 
-
-<joint> 的 <origin> 语义是：在关节零位时，child 坐标系相对 parent 坐标系的位姿。用齐次矩阵写就是：
-
+基于此，子连杆坐标系下的坐标到父连杆坐标系的变换矩阵如下：
+$$
+T_{parent←child}(q) = T_{origin}(xyz, rpy) · T_{joint}(axis, q)
+$$
+其中：
+$$T_{origin}(xyz, rpy)=
+\begin{bmatrix}
+R(rpy) & t(xyz) \\
+0 & 1  \\
+\end{bmatrix}$$
+- $T_{joint}(axis, q)$：q
+- 
 
 
        t = [x, y, z]ᵀ 是平移，表达在 parent 坐标系里
