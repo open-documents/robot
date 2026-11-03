@@ -63,3 +63,20 @@ qz = (r21 - r12) / (4·qw)
 3. 平移直接取 xyz，不做旋转（t 本来就在 parent 系里）。
 
 注意这里的转换顺序 先旋转再平移：如果写成 T = R·T(t)（先平移后旋转），结果就错了——平移会被 R 跟着转。正确的组合是 T = T(t)·R
+1. 1
+其中，URDF 的 rpy 是 extrinsic X-Y-Z：先绕世界固定的 X 轴转 roll，再绕固定的 Y 轴转 pitch，最后绕固定的 Z 轴转 yaw。写成矩阵就是右乘（因为每次左乘都会叠加在“当前”坐标系上）：
+
+
+R = Rz(yaw) · Ry(pitch) · Rx(roll)
+```
+          1    0       0    
+Rx(r) =   0  cos r   -sin r       绕 X 轴转 r (roll)
+          0  sin r    cos r 
+
+          cos p   0   sin p 
+Ry(p) =     0     1     0         绕 Y 轴转 p (pitch)
+         -sin p   0   cos p ┘
+
+        ┌ cos y  -sin y   0 ┐
+Rz(y) = │ sin y   cos y   0 │      绕 Z 轴转 y (yaw)
+        └   0       0     1 ┘
