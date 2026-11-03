@@ -13,6 +13,9 @@ URDF 提供的是运动学拓扑 + 每个关节的固定安装位姿
 | $Rot\_F(R \cdot a, \theta)$ | 在 F 系，绕轴 $R \cdot a$ 转 θ 的矩阵 |
 |  |  |
 
+已知坐标系 body 下绕轴 a 旋转 θ 的变换矩阵为 $Rot_{body}(a, θ)$，那么在坐标系 F 下绕
+Rot_F(R·a, θ) = R · Rot_body(a, θ) · R⁻¹ 
+
 # 一、关节
 关节用于连接父子连杆。URDF 文件中通过 <joint> 标签定义关节，本章介绍关节标签的属性和子标签。
 ```xml
@@ -57,11 +60,13 @@ $$
 # 附录
 ## 1、固定变化
 在关节零位时，子连杆到父连杆的固定变换 $T_{origin}(xyz, rpy)$，如下：
-$$T_{origin}(xyz, rpy)=
+$$
+T_{origin}(xyz, rpy)=
 \begin{bmatrix}
-R(rpy) & t(xyz) \\
+R(rpy) & \mathbf{t(xyz)} \\
 \mathbf{0}^T & 1  \\
-\end{bmatrix}$$
+\end{bmatrix}
+$$
 1）$R(rpy)$ 
 $$
 R(rpy) = R_z(yaw) \cdot R_y(pitch) \cdot R_x(roll)
