@@ -70,7 +70,7 @@ qz = (r21 - r12) / (4·qw)
 
 
 R = Rz(yaw) · Ry(pitch) · Rx(roll)
-```
+
           1    0       0    
 Rx(r) =   0  cos r   -sin r       绕 X 轴转 r (roll)
           0  sin r    cos r 
