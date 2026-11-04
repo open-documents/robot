@@ -1,28 +1,37 @@
 本文介绍机器人领域的 SRDF 文件。
 
-
-<group_state> 是 SRDF 里给某个规划组保存的一组"命名关节值"——可以理解成这个组的预设位姿 / 预设关节配置。它只描述"角度是多少"，本身不会让机器人动。
-
-1. 语法
-
-<group_state name="状态名" group="组名">
-    <joint name="关节名" value="值"/>   <!-- 可多个 -->
+# 预设（<group_state> ）
+在 SRDF 文件中，通过次顶级标签 <group_state> 来为某个规划组设定一个组状态，简单理解为为该组中某些关节预设一个位姿 / 关节配置。组状态只预设，并不会实际让机器人动。
+## 1、语法
+语法如下：
+```xml
+<group_state name="组状态名" group="组名">
+    <joint name="关节名" value="值"/> 
+    <!-- ... (可多个) -->
 </group_state>
-name：这个预设的名字，在该组内唯一。
-group：必须是在同一 SRDF 里用 <group> 定义过的组。
-joint：关节名必须是 URDF 里存在的、且属于该组的关节。
-value：revolute/continuous 关节是弧度，prismatic 关节是米。
+```
+
+其中：
+- name：组状态名称。必须在该组内唯一；
+- group：组状态所属组。必须是在同一 SRDF 中用 <group> 定义过的组；
+- joint：关节名。必须是 URDF 里存在的、且属于该组的关节；
+- value：r预设值。根据关节类型，evolute/continuous 关节是弧度，prismatic 关节是米；
+
+
 解析它的是 ROS 2 的 srdfdom 包，结构类似：
-
-
+```c++
 struct GroupState {
-  std::string group_;
+  std::string group_;   # 
   std::string name_;
   struct Joint { std::string name_; double value_; };
   std::vector<Joint> joint_values_;
 };
+```
+
+
 2. SRDF → MoveIt 的加载链路
 
+```
 URDF (robot_description)          SRDF (robot_description_semantic)
    link/joint 树        +          <group> / <group_state> / <disable_collisions>
         │                                  │
@@ -33,6 +42,9 @@ URDF (robot_description)          SRDF (robot_description_semantic)
                         ▼
              moveit::core::JointModelGroup
                         └─ named_states_: "left_home" → RobotStatePtr
+```
+
+
 也就是说，<group_state> 最终被实例化成 RobotState，挂在对应 JointModelGroup 的 named_states_ 表里，可通过 JointModelGroup::getNamedState("left_home") 或 getNamedStates() 取到。
 
 3. 它在运行时怎么被使用
