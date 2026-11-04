@@ -21,8 +21,8 @@
 解析它的是 ROS 2 的 srdfdom 包，结构类似：
 ```c++
 struct GroupState {
-  std::string group_;   # 
-  std::string name_;
+  std::string group_;   # 组状态所属组
+  std::string name_;    # 组状态名称
   struct Joint { std::string name_; double value_; };
   std::vector<Joint> joint_values_;
 };
