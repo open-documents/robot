@@ -4,8 +4,6 @@ TF（Transform）本质是 ROS 维护的一张“坐标系关系图”：
 - 两个 frame 之间的刚体变换（平移 + 旋转，SE(3)）是图里的一条边；
 - 结构必须是树：只有一个根，每个 frame 只能有一个父节点（不能有环、不能有多个父）。
 一旦有了这张树，任意两个 frame 之间的变换都可以通过沿路径逐段相乘得到：
-
-
 T_world_to_wrist3 = T(world→base) · T(base→shoulder) · ... · T(wrist_2→wrist_3)
 
 ```
