@@ -1,7 +1,11 @@
 本文介绍机器人领域的 SRDF 文件。
 
 # 预设（<group_state> ）
-在 SRDF 文件中，通过次顶级标签 <group_state> 来为某个规划组设定一个组状态，简单理解为为该组中某些关节预设一个位姿 / 关节配置。组状态只预设，并不会实际让机器人动。
+在 SRDF 文件中，通过次顶级标签 <group_state> 来为某个规划组设定一个组状态，简单理解为为该组中某些关节预设一个位姿 / 关节配置。
+需要注意的是：
+- 组状态只预设，并不会实际让机器人动；
+- 规划器（OMPL 等）本身不依赖它；它是给人用的便捷入口（默认起点、回 home、测试）；
+- 与 config/initial_positions.yaml 完全是两回事：那个是 ros2_control 假硬件启动时的初始关节值（本仓库里全是 0），group_state 是 MoveIt 语义层的预设。
 ## 1、语法
 语法如下：
 ```xml
@@ -18,18 +22,18 @@
 - value：r预设值。根据关节类型，evolute/continuous 关节是弧度，prismatic 关节是米；
 
 
-解析它的是 ROS 2 的 srdfdom 包，结构类似：
+## 2、与 ROS2
+在 ROS2 中，通过 srdfdom 包对其进行解析。结构类似：
 ```c++
-struct GroupState {
+struct RobotState {
   std::string group_;   # 组状态所属组
   std::string name_;    # 组状态名称
-  struct Joint { std::string name_; double value_; };
-  std::vector<Joint> joint_values_;
+  struct Joint { std::string name_; double value_; };   # 关节 && 关节预设值
+  std::vector<Joint> joint_values_;                     # 若干关节预设
 };
 ```
 
-
-2. SRDF → MoveIt 的加载链路
+SRDF → MoveIt 的加载链路
 
 ```
 URDF (robot_description)          SRDF (robot_description_semantic)
@@ -44,31 +48,31 @@ URDF (robot_description)          SRDF (robot_description_semantic)
                         └─ named_states_: "left_home" → RobotStatePtr
 ```
 
-
 也就是说，<group_state> 最终被实例化成 RobotState，挂在对应 JointModelGroup 的 named_states_ 表里，可通过 JointModelGroup::getNamedState("left_home") 或 getNamedStates() 取到。
 
-3. 它在运行时怎么被使用
+**使用**
 RViz
 MotionPlanning 面板 → Planning → Goal State 下拉框，会列出这些名字。选中后点 Plan 即可。
 
 C++（MoveIt 2）
-
+```c++
 moveit::core::RobotState state(robot_model_);
 state.setToDefaultValues(robot_model_->getJointModelGroup("left_arm"), "left_home");
 // 或者
 const moveit::core::RobotStatePtr named = jmg->getNamedState("left_home");
+```
 Python（moveit_commander）
-
+```python
 group = moveit_commander.MoveGroupCommander("left_arm")
 group.set_named_target("left_home")   # 只设目标，不执行
 group.plan()
 group.execute()
-注意
-只是"预设值"，不会自动下发、不会触发运动。
-规划器（OMPL 等）本身不依赖它；它是给人用的便捷入口（默认起点、回 home、测试）。
-与 config/initial_positions.yaml 完全是两回事：那个是 ros2_control 假硬件启动时的初始关节值（本仓库里全是 0），group_state 是 MoveIt 语义层的预设。
+```
 
 
+
+
+# 附录
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
