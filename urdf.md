@@ -50,6 +50,24 @@
 | floating | 6 | 任意平移 + 旋转 |
 
 
+
+## prismatic —— 沿单轴平移，有限位
+
+定义：沿 <axis> 方向直线滑动，位移被 \[lower, upper\] 限制（单位：米）。
+
+<joint name="lift_joint" type="prismatic">
+  <parent link="base_link"/>
+  <child link="slider_link"/>
+  <axis xyz="0 0 1"/>
+  <limit lower="0.0" upper="1.2" velocity="0.5" effort="500.0"/>
+</joint>
+
+
+变换：
+
+$$T(q) = \mathrm{Trans}(\hat a \cdot q)$$
+
+
 ## planar —— 平面内 3 自由度
 
 定义：在垂直于某轴（URDF 约定为 z）的平面内做二维平移 + 绕该轴旋转，共 3 DOF。
