@@ -11,13 +11,16 @@
   <group name="另一个组"/>               
 </group>
 ```
-以 MoveIt2 对 SRDF 解析后的 RobotModel 为例，其中：
+以 MoveIt2 对 SRDF 解析后的 RobotModel 为例，解析过程中，将：
 
-- <chain>：从 tip_link 往 base_link 依次添加连杆的父关节进关节组，不添加 base_link 的父关节。注意：不是添加连杆进关节组；
-- <link>：将 link 关联的父关节添加进关节组。注意：不是添加连杆进关节组；
+- <chain>：从 tip_link 往 base_link 依次添加连杆的父关节进关节组，不添加 base_link 的父关节。；
+- <link>：将 link 关联的父关节添加进关节组。注意：添加父关节进关节组，而不将连杆添加进关节组；不要将根 link写进 <link>，因为根 link（world）没有父关节；
 - <joint>：将 joint 添加进关节组；
-- <group>：将子组的故
+- <group>：将子组的关节全部添加进关节组；
 
+添加进关节组的关节，会根据关节类型（是否 fixed、是否mimic）对关节进行分类，从而获取可驱动关节。
+需要注意的是：
+- 组至少有一个有效关节，否则不会创建该组；
 
 # 预设（<group_state> ）
 在 SRDF 文件中，通过次顶级标签 <group_state> 来为某个规划组设定一个组状态，简单理解为为该组中某些关节预设一个位姿 / 关节配置。
