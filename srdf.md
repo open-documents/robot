@@ -11,6 +11,12 @@
   <group name="另一个组"/>                   <!-- 子组 -->
 </group>
 ```
+以 MoveIt2 对 SRDF 解析后的 RobotModel 为例，其中：
+
+- <chain>：
+- <link>：将 link 关联的副关节添加进注意，<link> 不是"把这个 link 塞进组"，而是"把它的父关节塞进组"
+- <joint>：
+- <group>：
 
 
 # 预设（<group_state> ）
