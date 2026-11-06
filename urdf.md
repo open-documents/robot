@@ -51,6 +51,21 @@
 
 
 
+
+## fixed —— 固定连接
+定义：父子 link 之间刚性固定，没有相对运动。
+```xml
+<joint name="ur5e_left_base_to_world" type="fixed">
+  <parent link="world"/>
+  <child link="ur5e_left_base_link"/>
+  <origin xyz="0 0.5 0" rpy="0 0 0"/>
+</joint>
+```
+
+
+变换：
+
+$$T(q) = I$$
 ## prismatic —— 沿单轴平移，有限位
 
 定义：沿 <axis> 方向直线滑动，位移被 \[lower, upper\] 限制（单位：米）。
