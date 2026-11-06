@@ -52,8 +52,8 @@
 
 
 
-## fixed —— 固定连接
-定义：父子 link 之间刚性固定，没有相对运动。
+## fixed
+fixed：固定连接。具体而言，父子连杆之间刚性固定，只有 <origin> 指定的相对位姿，没有相对运动。
 ```xml
 <joint name="ur5e_left_base_to_world" type="fixed">
   <parent link="world"/>
@@ -62,10 +62,33 @@
 </joint>
 ```
 
+变换：
+$$T(q) = I$$
+## revolute
+revolute ：绕单轴转动，有限位。具体而言，绕 <axis> 指定的固定轴旋转，转角被 \[lower, upper\] 限制。
+```xml
+<joint name="ur5e_left_elbow_joint" type="revolute">
+  <origin xyz="-0.42497195 0 0" rpy="0 0 0"/>
+  <parent link="ur5e_left_upper_arm_link"/>
+  <child link="ur5e_left_forearm_link"/>
+  <axis xyz="0 0 1"/>
+  <limit lower="-3.14159265" upper="3.14159265" velocity="3.14159265" effort="150.0"/>
+</joint>
+```
 
 变换：
-
-$$T(q) = I$$
+$$T(q) = \mathrm{Rot}(\hat{a},\, q), \quad q \in [q_{\min}, q_{\max}]$$
+## continuous
+continuous：绕单轴连续转动，无限位。与 revolute 的几何行为相同，但转角在圆周 $S^1$ 上，没有上下界。
+```xml
+<joint name="wheel_joint" type="continuous">
+  <parent link="base_link"/>
+  <child link="wheel_link"/>
+  <axis xyz="0 1 0"/>
+  <limit effort="10.0" velocity="20.0"/>   <!-- 可选 -->
+</joint>
+```
+变换：与 revolute 完全相同 $T(q)=\mathrm{Rot}(\hat a,q)$，区别在状态空间和距离度量
 ## prismatic —— 沿单轴平移，有限位
 
 定义：沿 <axis> 方向直线滑动，位移被 \[lower, upper\] 限制（单位：米）。
