@@ -89,7 +89,8 @@ continuous：绕单轴连续转动，无限位。与 revolute 的几何行为相
 </joint>
 ```
 变换：与 revolute 完全相同 $T(q)=\mathrm{Rot}(\hat a,q)$，区别在状态空间和距离度量
-## prismatic —— 沿单轴平移，有限位
+
+## prismatic（沿单轴平移，有限位）
 
 定义：沿 <axis> 方向直线滑动，位移被 \[lower, upper\] 限制（单位：米）。
 
@@ -106,9 +107,8 @@ continuous：绕单轴连续转动，无限位。与 revolute 的几何行为相
 $$T(q) = \mathrm{Trans}(\hat a \cdot q)$$
 
 
-## planar —— 平面内 3 自由度
-
-定义：在垂直于某轴（URDF 约定为 z）的平面内做二维平移 + 绕该轴旋转，共 3 DOF。
+## planar（平面内 3 自由度）
+在垂直于某轴（URDF 约定为 z）的平面内做二维平移 + 绕该轴旋转，共 3 DOF。
 ```xml
 <joint name="base_planar_joint" type="planar">
   <parent link="world"/>
@@ -117,12 +117,27 @@ $$T(q) = \mathrm{Trans}(\hat a \cdot q)$$
 </joint>
 ```
 
-
 变换：
-
 $$
 T(q) = \mathrm{Trans}(x, y, 0) \cdot \mathrm{Rot}(z, \theta), \quad q = [x, y, \theta]
 $$
+
+## floating （6 自由度刚体）
+完全自由的 3 维平移 + 3 维旋转，通常只用于 world 到机器人根节点（悬浮基座）。
+
+```xml
+<joint name="floating_base_joint" type="floating">
+  <parent link="world"/>
+  <child link="base_link"/>
+</joint>
+```
+
+变换：
+$$
+T(q) = \mathrm{Trans}(t_x, t_y, t_z) \cdot \mathrm{Quat}(w, x, y, z)
+$$
+
+
 ## 2、父子连杆变换关系（origin、axis 标签）
 父子连杆变换关系通过 <origin>、<axis> 标签内容配合实时关节值共同确定：
 - <origin>：定义关节在零位时，关节坐标系（即子连杆坐标系）在父连杆坐标系中的位姿。描述子连杆相对于父连杆的固定变换；
