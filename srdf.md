@@ -5,17 +5,17 @@
 
 ```xml
 <group name="G">
-  <chain base_link="..." tip_link="..."/>   <!-- 链 -->
-  <link name="..."/>                        <!-- 单个 link -->
-  <joint name="..."/>                       <!-- 单个 joint -->
-  <group name="另一个组"/>                   <!-- 子组 -->
+  <chain base_link="..." tip_link="..."/>  
+  <link name="..."/>                       
+  <joint name="..."/>                       
+  <group name="另一个组"/>               
 </group>
 ```
 以 MoveIt2 对 SRDF 解析后的 RobotModel 为例，其中：
 
 - <chain>：
-- <link>：将 link 关联的副关节添加进注意，<link> 不是"把这个 link 塞进组"，而是"把它的父关节塞进组"
-- <joint>：
+- <link>：将 link 关联的父关节添加进关节组。注意，<link> 并不是将指定 link添加进关节组；
+- <joint>：将 joint 添加进关节组
 - <group>：
 
 
