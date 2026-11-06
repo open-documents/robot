@@ -1,4 +1,4 @@
-本文介绍机器人领域的 SRDF 文件。
+本文介绍机器人领域的 SRDF 文件。SRDF 是对机器人的关节、连杆的语义分组（group/group_state/disable_collisions）
 
 # 预设（<group_state> ）
 在 SRDF 文件中，通过次顶级标签 <group_state> 来为某个规划组设定一个组状态，简单理解为为该组中某些关节预设一个位姿 / 关节配置。

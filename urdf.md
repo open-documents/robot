@@ -1,5 +1,4 @@
-
-本文介绍机器人领域的 URDF 文件。
+本文介绍机器人领域的 URDF 文件。URDF 文件描述机器人拓扑、运动学参数（link/joint/origin/axis/limit/collision）。
 
 # 左乘、右乘
 定义符号如下：
