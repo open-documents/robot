@@ -20,13 +20,16 @@
 # 一、关节
 关节用于连接父子连杆。URDF 文件中通过 <joint> 标签定义关节，本章介绍关节标签的属性和子标签。
 ```xml
-<joint name="ur5e_left_shoulder_pan_joint" type="revolute">
-  <origin xyz="0 0 0.16249999" rpy="0 0 -3.14159257"/>
-  <parent link="ur5e_left_base_link"/>
-  <child link="ur5e_left_shoulder_link"/>
-  <axis xyz="0 0 1"/>
-  <limit effort="150.0" lower="-6.28318531" upper="6.28318531" velocity="3.14159265"/>
-  <dynamics friction="0" damping="0"/>
+<joint name="..." type="revolute|continuous|prismatic|planar|floating|fixed">
+  <origin xyz="..." rpy="..."/>
+  <parent link="..."/>
+  <child link="..."/>
+  <axis xyz="..."/>
+  <calibration .../>
+  <dynamics damping="..." friction="..."/>
+  <limit lower="..." upper="..." effort="..." velocity="..."/>
+  <safety_controller .../>
+  <mimic joint="..." multiplier="..." offset="..."/>
 </joint>
 ```
 ## 1、关节类型（type 属性）
@@ -46,6 +49,24 @@
 | planar | 3 | 平面内平移 + 绕平面法线转动 |
 | floating | 6 | 任意平移 + 旋转 |
 
+
+## planar —— 平面内 3 自由度
+
+定义：在垂直于某轴（URDF 约定为 z）的平面内做二维平移 + 绕该轴旋转，共 3 DOF。
+```xml
+<joint name="base_planar_joint" type="planar">
+  <parent link="world"/>
+  <child link="base_link"/>
+  <axis xyz="0 0 1"/>
+</joint>
+```
+
+
+变换：
+
+$$
+T(q) = \mathrm{Trans}(x, y, 0) \cdot \mathrm{Rot}(z, \theta), \quad q = [x, y, \theta]
+$$
 ## 2、父子连杆变换关系（origin、axis 标签）
 父子连杆变换关系通过 <origin>、<axis> 标签内容配合实时关节值共同确定：
 - <origin>：定义关节在零位时，关节坐标系（即子连杆坐标系）在父连杆坐标系中的位姿。描述子连杆相对于父连杆的固定变换；
@@ -58,6 +79,15 @@ $$
 其中（具体公式定义见附录）：
 - $T_{origin}(xyz, rpy)$：负责描述关节安装位置的固定偏移。它通过平移 xyz 和旋转 rpy，确立了关节坐标系相对于父连杆坐标系的原点位置；
 - $T_{joint}(axis, q)$：负责描述关节实际运动带来的变换。axis 定义了运动的方向（比如绕 X/Y/Z 轴转动），q 是关节变量（旋转关节是角度，移动关节是距离）；
+
+
+
+
+
+
+
+
+
 # 附录
 ## 1、固定变化
 在关节零位时，子连杆到父连杆的固定变换 $T_{origin}(xyz, rpy)$，如下：
