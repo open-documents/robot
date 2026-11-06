@@ -13,10 +13,10 @@
 ```
 以 MoveIt2 对 SRDF 解析后的 RobotModel 为例，其中：
 
-- <chain>：
-- <link>：将 link 关联的父关节添加进关节组。注意，<link> 并不是将指定 link添加进关节组；
-- <joint>：将 joint 添加进关节组
-- <group>：
+- <chain>：从 tip_link 往 base_link 依次添加连杆的父关节进关节组，不添加 base_link 的父关节。注意：不是添加连杆进关节组；
+- <link>：将 link 关联的父关节添加进关节组。注意：不是添加连杆进关节组；
+- <joint>：将 joint 添加进关节组；
+- <group>：将子组的故
 
 
 # 预设（<group_state> ）
