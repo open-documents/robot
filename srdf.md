@@ -1,16 +1,16 @@
 本文介绍机器人领域的 SRDF 文件。SRDF 是对机器人的关节、连杆的语义分组（group/group_state/disable_collisions）。
 
 # 分组（<group>）
-在 SRDF 文件中，通过次顶级标签 <group> 来设定规划组。分组<>
+在 SRDF 文件中，通过次顶级标签 <group> 来设定规划组。分组标签 <group> 内部包含 4 类标签，可以任意组合：
 
-
+```xml
 <group name="G">
   <chain base_link="..." tip_link="..."/>   <!-- 链 -->
   <link name="..."/>                        <!-- 单个 link -->
   <joint name="..."/>                       <!-- 单个 joint -->
   <group name="另一个组"/>                   <!-- 子组 -->
 </group>
-
+```
 
 
 
