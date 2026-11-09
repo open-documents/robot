@@ -1,0 +1,8 @@
+# iMark 远程同步默认忽略
+.obsidian/
+.trash/
+node_modules/
+*.imark-tmp
+.DS_Store
+Thumbs.db
+desktop.ini
