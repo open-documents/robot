@@ -199,7 +199,13 @@ auto s2 = std::make_shared<moveit::core::RobotState>(robot_model);
 补充：`acceleration_` 与 `effort_` **共用同一块内存**，不会同时有值；`velocity_` 等也只在设置过后才有效（有 `has_velocity_` 等标志）。
 
 ```
+auto current_state = scene->getCurrentState();
+   std::vector<double> cv;
+    current_state.copyJointGroupPositions("dual_arms", cv);
 
+mutable moveit::core::RobotState scratch_;
+Eigen::Ref<const Eigen::VectorXd>& q
+scratch_.setJointGroupPositions(combined_, q);
 ```
 
 
