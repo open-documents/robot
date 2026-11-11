@@ -3,3 +3,10 @@ ompl::base::RealVectorStateSpace 是 OMPL 里表示 $R^n$（n 维实数向量）
 ```
 std::make_shared<ompl::base::RealVectorStateSpace>();
 ```
+
+
+
+ProjectedStateSpace 是 OMPL「解耦式约束规划」的两种流形状态空间之一
+
+
+
