@@ -33,6 +33,44 @@ auto csi = std::make_shared<ompl::base::ConstrainedSpaceInformation>(css);
 
 
 
+
+
+ConstrainedSpaceInformation 构造时多做的两件事
+源码（ConstrainedSpaceInformation.h）：
+
+
+ConstrainedSpaceInformation(StateSpacePtr space) : SpaceInformation(std::move(space))
+{
+  stateSpace_->as<ConstrainedStateSpace>()->setSpaceInformation(this);   // ①
+  setValidStateSamplerAllocator([](const SpaceInformation *si) {         // ②
+    return std::make_shared<ConstrainedValidStateSampler>(si);
+  });
+}
+① 反向关联 si
+
+ConstrainedStateSpace 内部有个 si_ 裸指针，discreteGeodesic() 沿流形走每一步时要做碰撞检查：
+
+
+auto &&svc = si_->getStateValidityChecker();
+...
+if (!(interpolate || svc->isValid(scratch))) break;
+没有 setSpaceInformation(this)，si_ 就是空，css->setup() 直接抛异常：
+
+
+Must associate a SpaceInformation object to the ConstrainedStateSpace via setStateInformation() before use.
+这正是你 L68-69 注释写的情况。
+
+② 换成约束专用采样器
+
+普通 ValidStateSampler 只查 si_->isValid()；ConstrainedValidStateSampler 额外查约束：
+
+
+sampler_->sampleUniform(state);
+while (!(valid = si_->isValid(state) && constraint_->isSatisfied(state)) && ++tries < attempts_);
+注意这里调用的是 constraint_->isSatisfied() → 默认实现 → 你的 function()，所以又绕回了约束残差。
+
+
+
 Constraint
 
 ```
