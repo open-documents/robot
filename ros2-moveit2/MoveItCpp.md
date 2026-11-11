@@ -175,10 +175,9 @@ MoveItCpp 构造
 |---|---|
 | `variable_names_` | 整机所有变量的名字（**含 mimic，不含 fixed**） |
 | `variable_count_` | 整机变量总数 |
-| `joint_variables_index_map_` | **变量名 → 整机下标**；关节名也会登记一条，指向该关节首变量的整机下标 |
-| `joints_of_variable_` | **变量下标 → 所属关节**（与 `variable_names_` 平行）。数组，下标 = 整机变量下标，元素 = const JointModel*，指向 joint_model_vector_ 里那个关节对象 |
+| `joint_variables_index_map_` | 变量名 → 整机变量下标  &&  关节名 → 该关节首变量的整机变量下标。因此，`joint_variables_index_map_` 有两种 key：变量名和关节名，1-DOF 关节时两者相同，多 DOF 关节时关节名指向首变量。 |
+| `joints_of_variable_` | 变量下标 → 所属关节（与 `variable_names_` 平行）。数组，下标 = 整机变量下标，元素 = const JointModel*，指向 joint_model_vector_ 里那个关节对象 |
 
-注意 `joint_variables_index_map_` 有两种 key：变量名和关节名。1-DOF 关节时两者相同；多 DOF 关节时关节名指向首变量。
 
 ### 1.6 RobotState
 
