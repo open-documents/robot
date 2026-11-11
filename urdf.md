@@ -1,22 +1,4 @@
 本文介绍机器人领域的 URDF 文件。URDF 文件描述机器人拓扑、运动学参数（link/joint/origin/axis/limit/collision）。
-
-# 左乘、右乘
-定义符号如下：
-
-| 符号 | 含义 |
-| :---: | :---: |
-| $R$、$R_{F \leftarrow body}$ | 映射：将 body 系映射到 F 系 |
-| $a$ | body 系中的某坐标轴 a |
-| $R \cdot a$ | F 系中的某坐标轴 a（a 经过 R 变换） |
-| $Rot\_body(a, \theta)$ | 在 body 系，绕轴 a 转 θ 的矩阵 |
-| $Rot\_F(R \cdot a, \theta)$ | 在 F 系，绕轴 $R \cdot a$ 转 θ 的矩阵 |
-
-已知坐标系 body 下绕轴 a 旋转 θ 的变换矩阵为 $Rot_{body}(a, θ)$，那么在坐标系 F 下绕 a 旋转 θ 的变换矩阵为：$Rot_F(R·a, θ) = R · Rot_{body}(a, θ) · R⁻¹$
-证明：对 F 系里任意向量 v，做下面操作：
-- $R⁻¹ · v$：把 $v$ 从 F 坐标系映射到 body 坐标系；
-- $Rot_{body}(a,θ) · (R⁻¹ v)$：在 body 坐标系中绕 a 转 θ；
-- $R · (...)$：将坐标映射回 F 坐标系；
-
 # 一、关节
 关节用于连接父子连杆。URDF 文件中通过 <joint> 标签定义关节，本章介绍关节标签的属性和子标签。
 ```xml
@@ -48,9 +30,6 @@
 | prismatic | 1 | 沿单轴平移，有位移上下限 |
 | planar | 3 | 平面内平移 + 绕平面法线转动 |
 | floating | 6 | 任意平移 + 旋转 |
-
-
-
 
 ## fixed
 fixed：固定连接。具体而言，父子连杆之间刚性固定，只有 <origin> 指定的相对位姿，没有相对运动。
@@ -93,14 +72,14 @@ continuous：绕单轴连续转动，无限位。与 revolute 的几何行为相
 ## prismatic（沿单轴平移，有限位）
 
 定义：沿 <axis> 方向直线滑动，位移被 \[lower, upper\] 限制（单位：米）。
-
+```
 <joint name="lift_joint" type="prismatic">
   <parent link="base_link"/>
   <child link="slider_link"/>
   <axis xyz="0 0 1"/>
   <limit lower="0.0" upper="1.2" velocity="0.5" effort="500.0"/>
 </joint>
-
+```
 
 变换：
 
