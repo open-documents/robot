@@ -11,5 +11,9 @@ RealVectorStateSpace 的构造函数会创建 bounds_(dim)，而 RealVectorBound
 
 ProjectedStateSpace 是 OMPL「解耦式约束规划」的两种流形状态空间之一
 
+```
+MoveItDualArmConstraint
+```
+
 
 
