@@ -9,11 +9,37 @@ std::make_shared<ompl::base::RealVectorStateSpace>(n);
 RealVectorStateSpace 的构造函数会创建 bounds_(dim)，而 RealVectorBounds(dim) 的内部 resize 把每一维的 low/high 都初始化成 0.0（不是 ±∞）
 
 
+
+约束
+
+```
+ompl::base::ConstraintPtr cptr(std::make_shared<MoveItDualArmConstraint>(constraint));
+```
+
+
 ProjectedStateSpace 是 OMPL「解耦式约束规划」的两种流形状态空间之一
 
 ```
-MoveItDualArmConstraint
+auto css  = std::make_shared<ompl::base::ProjectedStateSpace>(ambient, cptr);
 ```
 
 
 
+css -> csi
+
+```
+auto csi = std::make_shared<ompl::base::ConstrainedSpaceInformation>(css);
+```
+
+
+
+Constraint
+
+```
+Constraint 对外暴露的虚函数
+├── function(x, out)      ← 必须重写（没有默认实现）
+├── jacobian(x, out)      ← 可选，基类有数值差分默认版
+├── project(x)            ← 可选，基类默认 = 牛顿法
+├── distance(x)           ← 可选，基类默认 = ‖F(x)‖
+└── isSatisfied(x)        ← 可选，基类默认 = ‖F(x)‖² ≤ tol²
+```
