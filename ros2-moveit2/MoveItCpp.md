@@ -198,6 +198,12 @@ auto s2 = std::make_shared<moveit::core::RobotState>(robot_model);
 
 补充：`acceleration_` 与 `effort_` **共用同一块内存**，不会同时有值；`velocity_` 等也只在设置过后才有效（有 `has_velocity_` 等标志）。
 
+```
+
+```
+
+
+
 ### 1.7 变量与关节
 
 MoveIt 需要把「关节结构」和「运行时数值」分开存放。数值统一放在一个 `double` 数组里，数组的每一格就叫一个**变量（variable）**。
