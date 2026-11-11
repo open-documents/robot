@@ -71,6 +71,13 @@ while (!(valid = si_->isValid(state) && constraint_->isSatisfied(state)) && ++tr
 
 
 
+```
+ompl::base::ScopedState<ompl::base::ConstrainedStateSpace> s_start(css);
+  ompl::base::ScopedState<ompl::base::ConstrainedStateSpace> s_goal(css);
+```
+
+
+
 Constraint
 
 ```
