@@ -1,3 +1,4 @@
+本文介绍机器人运动学建模的两种方法：标准DH（Standard Denavit-Hartenberg，SDH）、改进DH（Modified Denavit-Hartenberg，MDH）。
 # 一、公垂线
 1）公垂线（common perpendicular） 
 
@@ -30,7 +31,7 @@ a_x b_y - a_y b_x
 $$
 
 # 二、DH参数
-DH（Denavit-Hartenberg）参数用 4 个参数描述相邻两个关节坐标系之间的相对位姿。对于关节 $i$，参数为：
+DH 参数用 4 个参数描述相邻两个关节坐标系之间的相对位姿。对于关节 $i$，参数为：
 
 | 参数 | 符号 | 几何含义 | 关节类型影响 |
 | :---: | :---: | :---: | :---: |
