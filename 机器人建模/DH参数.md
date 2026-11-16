@@ -45,9 +45,8 @@ DH（Denavit-Hartenberg）参数用 4 个参数描述相邻两个关节坐标系
 
 标准 DH 建立坐标系过程如下：
 
--    zi−1zi−1​ 轴沿关节 ii 的轴线方向。
-
-    xixi​ 轴沿 zi−1zi−1​ 与 zizi​ 的公垂线方向，从 zi−1zi−1​ 指向 zizi​。
+- $z_{i-1}$ 轴沿关节 $i$ 的轴线方向
+- xixi​ 轴沿 zi−1zi−1​ 与 zizi​ 的公垂线方向，从 zi−1zi−1​ 指向 zizi​。
 
     原点 OiOi​ 为公垂线与 zizi​ 轴的交点。
 
