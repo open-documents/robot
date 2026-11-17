@@ -38,5 +38,8 @@
       <ellipse cx="80" cy="32" rx="80" ry="32" fill="#eef2ff" stroke="#4b5563" stroke-width="1.5"/>
       <text x="80" y="36.2" text-anchor="middle" font-family="'Segoe UI', 'Microsoft YaHei', 'PingFang SC', sans-serif" font-size="14" fill="#1f2328" data-imark-text="结束"><tspan x="80" y="36.2">结束</tspan></text>
     </g>
+    <g data-imark-node="n6" data-imark-shape="text" data-imark-x="1294" data-imark-y="771" data-imark-w="140" data-imark-h="40" data-imark-align="left" data-imark-valign="middle" data-imark-radius="8" transform="translate(1294 771)">
+      <text data-imark-text="" x="0" y="0" fill="none"></text>
+    </g>
   </g>
 </svg>
