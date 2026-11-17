@@ -35,12 +35,13 @@ DH 参数用 4 个参数描述相邻两个关节坐标系之间的相对位姿�
 
 | 参数 | 符号 | 标准DH | 改进DH | 关节类型影响 |
 | :---: | :---: | :---: | :---: | :---: |
-| 连杆长度 | $a_i$ | 沿 $x_i$ 轴，从 $z_{i-1}$ 到 $z_i$​ 的距离 |  | 常数 |
-| 连杆扭转角 | $\alpha_i$ | 绕 $x_i$ 轴，从 $z_{i-1}$​ 转到 $z_i$ 的角度 |  | 常数 |
-| 连杆偏距 | $d_i$ | 沿 $z_{i-1}$ 轴，从 $x_{i-1}$​ 到 $x_i$​ 的距离 |  | 移动关节时为变量 |
+| 连杆长度 | $a_i$ | 沿 $X_i$ 轴，从 $Z_{i-1}$ 到 $Z_i$​ 的距离 | 沿 $X_{i−1}$​ 轴，从 $Z_{i−1}$​ 平移到 $Z_i$​ 的距离 | 常数 |
+| 连杆扭转角 | $\alpha_i$ | 绕 $X_i$ 轴，从 $Z_{i-1}$​ 转到 $Z_i$ 的角度 | 绕 $X_{i−1}$​ 轴，从 $Z_{i−1}$​ 转到 $Z_i$​ 的角度 | 常数 |
+| 连杆偏距 | $d_i$ | 沿 $Z_{i-1}$ 轴，从 $X_{i-1}$​ 到 $X_i$​ 的距离 | 沿 $Z_i$ 轴，从 $X_{i−1}$​ 平移到 $X_i$​ 的距离 | 移动关节时为变量 |
 | 关节角 | $\theta_i$ | 绕 $Z_{i-1}$​ 轴，从 $X_{i-1}$​​ 转到 $X_i$​ 的角度 | 绕 $Z_i$ 轴，从 $X_{i−1}$ 转到 $X_i$ 的角度 | 旋转关节时为变量 |
 
-标准 DH 建立坐标系过程如下：
+
+1、标准 DH 建立坐标系过程如下：
 1）确定所有Z轴：对于关节$i$，$Z_{i-1}$ 轴沿关节 $i$ 的轴线方向，即关节$i$对应坐标系$\{ i-1 \}$；
 2）确定坐标系原点：坐标系$\{ i \}$的原点定在连杆 $i$ 的远端（即 $Z_i$​ 轴上），通常为 $Z_{i−1}$​ 与 $Z_i$​ 的公垂线与 $Z_i$​ 的交点；
 3）确定所有X轴：$X_i​$轴沿$Z_{i−1}$与$Z_i$​ 的公垂线方向；
@@ -54,8 +55,8 @@ DH 参数用 4 个参数描述相邻两个关节坐标系之间的相对位姿�
 
 
 
-改进 DH 建立坐标系过程如下：\
-1）确定所有Z轴：$Z_i$轴沿关节$i$的轴线方向（注意下标与SDH不同，轴号与关节号对齐）；\
+2、改进 DH 建立坐标系过程如下：\
+1）确定所有Z轴：$Z_i$轴沿关节$i$的轴线方向；\
 2）确定坐标系原点：坐标系$\{ i \}$的原点定在$X_{i−1}$轴沿$Z_{i−1}$与$Z_i$的公垂线方向，坐标系$\{ i−1 \}$的原点位于该公垂线与$Z_{i−1}$的交点。该坐标系位于连杆 i 的起始端；\
 3）确定所有X轴：$X_i​$轴沿$Z_{i−1}$与$Z_i$​ 的公垂线方向；
 
@@ -77,3 +78,39 @@ DH 参数用 4 个参数描述相邻两个关节坐标系之间的相对位姿�
                   ▄▄▄▄▄
                 [固定基座]
 ```
+
+
+
+1
+
+$$
+% 标准 DH (SDH) 变换公式
+\begin{equation}
+{}^{i-1}T_i = \text{Rot}(Z_{i-1}, \theta_i) \cdot \text{Trans}(Z_{i-1}, d_i) \cdot \text{Trans}(X_i, a_i) \cdot \text{Rot}(X_i, \alpha_i)
+\end{equation}
+
+\begin{equation}
+{}^{i-1}T_i = 
+\begin{bmatrix}
+\cos\theta_i & -\sin\theta_i\cos\alpha_i & \sin\theta_i\sin\alpha_i & a_i\cos\theta_i \\
+\sin\theta_i & \cos\theta_i\cos\alpha_i & -\cos\theta_i\sin\alpha_i & a_i\sin\theta_i \\
+0 & \sin\alpha_i & \cos\alpha_i & d_i \\
+0 & 0 & 0 & 1
+\end{bmatrix}
+\end{equation}
+
+% 改进 DH (MDH) 变换公式
+\begin{equation}
+{}^{i-1}T_i = \text{Rot}(X_{i-1}, \alpha_{i-1}) \cdot \text{Trans}(X_{i-1}, a_{i-1}) \cdot \text{Rot}(Z_i, \theta_i) \cdot \text{Trans}(Z_i, d_i)
+\end{equation}
+
+\begin{equation}
+{}^{i-1}T_i = 
+\begin{bmatrix}
+\cos\theta_i & -\sin\theta_i & 0 & a_{i-1} \\
+\sin\theta_i\cos\alpha_{i-1} & \cos\theta_i\cos\alpha_{i-1} & -\sin\alpha_{i-1} & -d_i\sin\alpha_{i-1} \\
+\sin\theta_i\sin\alpha_{i-1} & \cos\theta_i\sin\alpha_{i-1} & \cos\alpha_{i-1} & d_i\cos\alpha_{i-1} \\
+0 & 0 & 0 & 1
+\end{bmatrix}
+\end{equation}
+$$
