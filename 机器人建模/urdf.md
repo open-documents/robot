@@ -85,7 +85,7 @@ continuous：绕单轴连续转动，无限位。与 revolute 的几何行为相
 $$T(q) = \mathrm{Trans}(\hat a \cdot q)$$
 
 
-## planar（平面内 3 自由度）
+### planar（平面内 3 自由度）
 在垂直于某轴（URDF 约定为 z）的平面内做二维平移 + 绕该轴旋转，共 3 DOF。
 ```xml
 <joint name="base_planar_joint" type="planar">
@@ -100,7 +100,7 @@ $$
 T(q) = \mathrm{Trans}(x, y, 0) \cdot \mathrm{Rot}(z, \theta), \quad q = [x, y, \theta]
 $$
 
-## floating （6 自由度刚体）
+### floating （6 自由度刚体）
 完全自由的 3 维平移 + 3 维旋转，通常只用于 world 到机器人根节点（悬浮基座）。
 
 ```xml
