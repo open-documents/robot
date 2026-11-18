@@ -1,3 +1,23 @@
+本文介绍 ROS2 的内置包 robot_state_publisher，即可以直接在 launch 文件中创建启动：
+
+```python
+def generate_launch_description():
+    rsp_node = Node(
+        package="robot_state_publisher",
+        executable="robot_state_publisher",
+        parameters=[moveit_config.robot_description],
+    )
+    return LaunchDescription(
+        [rsp_node]
+    )
+```
+
+
+robot_state_publisher 包中的 robot_state_publisher 做 3 件事情：
+
+
+
+
 robot_state_publisher 用它表示运动学树
 
 urdf::Model model;
