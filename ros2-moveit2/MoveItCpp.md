@@ -1,5 +1,3 @@
-# MoveItCpp
-
 MoveItCpp 是 MoveIt 2 在 C++ 中暴露的门面之一：它把「场景维护 → 算法规划 → 轨迹执行」三层装配起来，对外提供 `getRobotModel()`、`getPlanningSceneMonitor()`、`getPlanningPipelines()`、`plan()`、`execute()` 等高层接口。
 
 ```cpp
