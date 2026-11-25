@@ -138,8 +138,7 @@ MoveItCpp 构造
    - 变量数 > 0 且有 mimic → **mimic**
    - 变量数 = 0 → **fixed**
 
-   注意分类依据是**变量数和 mimic 指针**，不是关节类型本身。
-
+ 注意分类依据是**变量数和 mimic 指针**，不是关节类型本身。
 ### 1.4 RobotModel 内部对象
 
 **LinkModel：描述连杆**
